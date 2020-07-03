@@ -10,9 +10,58 @@ function IsRoyalFlush(cards){
 
 }
 
+// it will be used to analyse a player's cards by dividing into the Poker's ten rules.
+function AnalyseCards(cards){
+
+}
+
+//
 function OneHand(player1, player2){
 
 }
+
+// Who is the winner
+function WhoWin(player1, player2){
+    console.log("Test");
+    console.log(player1.name);
+    console.log(player2.name);   
+}
+/// Testing and simulation
+var player1 = {
+    name:'Player1',
+    IsRoyalFlush:false,
+    StraightFlush: 0,
+    FourKind:0,
+    FullHouse:{Three:0, Pair:0},
+    Flush:0,
+    Straight:0,
+    ThreeKind:0,
+    TwoPairs:{Pair1:0, Pair2:0}, 
+    Pair:0,
+    HighCard:0
+};
+
+var player2 = {
+    name:'Player2',
+    IsRoyalFlush:false,
+    StraightFlush: 0,
+    FourKind:0,
+    FullHouse:{Three:0, Pair:0},
+    Flush:0,
+    Straight:0,
+    ThreeKind:0,
+    TwoPairs:{Pair1:0, Pair2:0}, 
+    Pair:0,
+    HighCard:0
+};
+
+// Who is the winner
+WhoWin(player1, player2);
+
+/// End Testing and simulation
+
+
+
 
 // it will be used to begin the app
 function Start(){
