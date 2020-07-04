@@ -51,21 +51,113 @@ function GetCardVal(card){
 // Get IsRoyalFlush
 // Return false if Ten, Jack, Queen, King and Ace in the same suit
 function GetIsRoyalFlush(arr_cards_oneplayer){
-    return false;
+    let flage = false;
+    let first_suit = arr_cards_oneplayer[0][1];
+
+    for (let i=0; i < arr_cards_oneplayer.length; i++)
+    {
+        let ele = arr_cards_oneplayer[i];
+        if (GetCardVal(ele[0]) >= 10 && ele[1]=== first_suit){ 
+            flage = true;
+        }   
+        else {
+            flage = false;
+            break;
+        }
+    }
+    return flage;
 } 
+
+// GetStraightFlush
+// All five cards in consecutive value order, with the same suit
+// Return the highest card value; i.e 9C TC JC QC KC; it will return 13
+function GetStraightFlush(arr_cards_oneplayer){
+    let is_suit = false;
+    let first_suit = arr_cards_oneplayer[0][1];
+    let card_values = [];
+
+    for (let i=0; i < arr_cards_oneplayer.length; i++)
+    {
+        var ele = arr_cards_oneplayer[i];
+        card_values.push(GetCardVal(ele[0]));
+        if (ele[1]=== first_suit){ 
+            is_suit = true;
+        }   
+        else {
+            is_suit = false;
+            break;
+        }
+    }
+
+    if (!is_suit)
+        return 0;
+    // Checking if Straight
+    // Sort the values
+    card_values.sort(function(a, b){return a - b});
+    let is_straight = false;
+
+    for (let i=0; i< card_values.length-1; i++){
+        let itm1 = card_values[i];
+        let itm2 = card_values[i+1];
+        if (itm1+1 === itm2)
+            is_straight = true;
+        else {
+            is_straight = false;
+            break;
+        }
+    }
+    if (is_straight)
+        return card_values[card_values.length-1]; // return the max
+
+    return 0;
+}
 
 // One line from poker-hands or one hand; input: 9C 9D 8D 7C 3C 2S KD TH 9H 8H
 function OneHand(oneLineCards){
+
+    var player1 = {
+        name:'Player1',
+        IsRoyalFlush:false,
+        StraightFlush: 0,
+        FourKind:0,
+        FullHouse:{Three:0, Pair:0},
+        Flush:0,
+        Straight:0,
+        ThreeKind:0,
+        TwoPairs:{Pair1:0, Pair2:0}, 
+        Pair:0,
+        HighCard:0
+    };
+    
+    var player2 = {
+        name:'Player2',
+        IsRoyalFlush:false,
+        StraightFlush: 0,
+        FourKind:0,
+        FullHouse:{Three:0, Pair:0},
+        Flush:0,
+        Straight:0,
+        ThreeKind:0,
+        TwoPairs:{Pair1:0, Pair2:0}, 
+        Pair:0,
+        HighCard:0
+    };
+
     var arr = oneLineCards.split(" ");
     var arr1 = arr.slice(0, 5);
     var arr2 = arr.slice(5, 10);
 
-    console.log(GetCardVal('2'));
-    console.log(GetCardVal('A'));
-    console.log(GetCardVal('K'));
+    player1.IsRoyalFlush = GetIsRoyalFlush(arr1);
+    player2.IsRoyalFlush = GetIsRoyalFlush(arr2);
 
-    console.log(arr1);
-    console.log(arr2);
+    if (!player1.IsRoyalFlush)
+        player1.StraightFlush = GetStraightFlush(arr1);
+    if (!player2.IsRoyalFlush)
+        player2.StraightFlush = GetStraightFlush(arr2);
+    
+    console.log(player1);
+    console.log(player2);
+    console.log('The winner is player' + WhoWin(player1, player2));
 } 
 /// End Data analysing
 
@@ -182,7 +274,7 @@ var player2 = {
 // Who is the winner
 //console.log(WhoWin(player1, player2));
 
-OneHand("9C 9D 8D 7C 3C 2S KD TH 9H 8H");
+OneHand("TC KC QC JC AC TH JH QH KH 7H");
 
 /// End Testing and simulation
 
