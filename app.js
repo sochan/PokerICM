@@ -16,9 +16,58 @@ function AnalyseCards(cards){
 }
 
 //
-function OneHand(player1, player2){
 
+/// Data analysing
+
+
+// Cards: 2, 3, 4, 5, 6, 7, 8, 9, 10(T), Jack(J), Queen(Q), King (K), Ace(A) 
+// Return: 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+function GetCardVal(card){
+    if (!isNaN(card))
+        return parseInt(card);
+    else {
+        var cardValue = 0; 
+        switch(card){
+            case 'T':
+                cardValue = 10;
+                break;
+            case 'J':
+                cardValue = 11;
+                break;
+            case 'Q':
+                cardValue = 12;
+                break;
+            case 'K':
+                cardValue = 13;
+                break;
+            default:
+                cardValue = 14;
+        }
+        return cardValue;
+    }
 }
+
+//       
+// Get IsRoyalFlush
+// Return false if Ten, Jack, Queen, King and Ace in the same suit
+function GetIsRoyalFlush(arr_cards_oneplayer){
+    return false;
+} 
+
+// One line from poker-hands or one hand; input: 9C 9D 8D 7C 3C 2S KD TH 9H 8H
+function OneHand(oneLineCards){
+    var arr = oneLineCards.split(" ");
+    var arr1 = arr.slice(0, 5);
+    var arr2 = arr.slice(5, 10);
+
+    console.log(GetCardVal('2'));
+    console.log(GetCardVal('A'));
+    console.log(GetCardVal('K'));
+
+    console.log(arr1);
+    console.log(arr2);
+} 
+/// End Data analysing
 
 // who is the winner;
 // return: 0, 1, 2; 0-tie, 1-Player1 wins, 2-Player2 wins
@@ -100,6 +149,7 @@ function WhoWin(player1, player2){
     // by default no one is the winner; tie
     return 0;
 }
+
 /// Testing and simulation
 var player1 = {
     name:'Player1',
@@ -130,7 +180,9 @@ var player2 = {
 };
 
 // Who is the winner
-console.log(WhoWin(player1, player2));
+//console.log(WhoWin(player1, player2));
+
+OneHand("9C 9D 8D 7C 3C 2S KD TH 9H 8H");
 
 /// End Testing and simulation
 
@@ -159,6 +211,6 @@ function Start(){
 
 
 
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => res.send('Hello Poker!'))
 
 app.listen(port, () => console.log(`Poker app listening at http://localhost:${port}`))
