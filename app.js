@@ -112,6 +112,32 @@ function GetStraightFlush(arr_cards_oneplayer){
     return 0;
 }
 
+// GetFourKind
+// Four cards of the same value; 4C 4D 4S 4H KH
+// Return: Card value of four of a kind
+function GetFourKind(arr_cards_oneplayer){
+    let arr_four_k =[];
+    let card_values=[];
+    for (let i=0; i < arr_cards_oneplayer.length; i++){
+        card_values.push(arr_cards_oneplayer[i][0]);
+    }
+    // Sorting
+    card_values.sort(function(a, b){return a - b});
+    for(let i=0; i< card_values.length-1; i++){
+        let itm1 = card_values[i];
+        let itm2 = card_values[i+1];
+        if (itm1 === itm2){
+            if (!arr_four_k.includes(itm1))
+                arr_four_k.push(itm1);
+            arr_four_k.push(itm2);
+        } 
+    }
+
+    if (arr_four_k.length===4)
+        return arr_four_k[0];
+    return 0;
+}
+
 // One line from poker-hands or one hand; input: 9C 9D 8D 7C 3C 2S KD TH 9H 8H
 function OneHand(oneLineCards){
 
@@ -154,6 +180,9 @@ function OneHand(oneLineCards){
         player1.StraightFlush = GetStraightFlush(arr1);
     if (!player2.IsRoyalFlush)
         player2.StraightFlush = GetStraightFlush(arr2);
+
+    player1.FourKind = GetFourKind(arr1);
+    player2.FourKind = GetFourKind(arr2);
     
     console.log(player1);
     console.log(player2);
@@ -274,7 +303,7 @@ var player2 = {
 // Who is the winner
 //console.log(WhoWin(player1, player2));
 
-OneHand("TC KC QC JC AC TH JH QH KH 7H");
+OneHand("6C 8C 6H 6D 6S 9H 9D 9S 7C 9C");
 
 /// End Testing and simulation
 
