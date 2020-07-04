@@ -13,10 +13,8 @@ A poker hand consists of a combination of five playing cards, ranked in the foll
 
 ## Model
 
-Player1: 4H 4C 6S 7S KD (Pair of Fours)
-Player2: 2C 3S 9S 9D TD (Pair of Nines)
-
-
+### Player1: 4H 4C 6S 7S KD (Pair of Fours)
+```
 var player1 = {
     name:'Player1',
     IsRoyalFlush:false,
@@ -30,7 +28,9 @@ var player1 = {
     Pair:4,
     HighCard:13
 };
-
+```
+### Player2: 2C 3S 9S 9D TD (Pair of Nines)
+```
 var player2 = {
     name:'Player2',
     IsRoyalFlush:false,
@@ -44,3 +44,4 @@ var player2 = {
     Pair:9,
     HighCard:10
 };
+```
