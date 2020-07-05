@@ -389,7 +389,11 @@ function OneHand(oneLineCards){
 } 
 /// End Data analysing
 
-OneHand("QH QD QS QC JH 2C 2S 3H 4D 7H");
+//OneHand("QH TH JH 9D 8H 2C 2S 3H 4D 7H");
+//OneHand("QH QD QS 9D 8H 2C 2S 3H 4D 7H");
+//OneHand("QH QD 9S 9D 8H QS QC 9H 9C 8D");
+//OneHand("QH QD 9S 8D 8H QS QC 9H 9C 8D");
+OneHand("QH KD 9S 7D 8H QS AC TH 2C 8D");
 
 // who is the winner;
 // return: 0, 1, 2; 0-tie, 1-Player1 wins, 2-Player2 wins
