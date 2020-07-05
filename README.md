@@ -1,5 +1,7 @@
 # PokerICM
-A poker hand consists of a combination of five playing cards, ranked in the following ascending order of 10 rules with highest value to win.
+A poker hand consists of a combination of five playing cards, ranked in the following ascending order of 10 rules with suit and the highest value to win. The cards are valued in the order: 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King, Ace (the highest).
+Suits are: Diamonds (D), Hearts (H), Spades (S), Clubs (C).
+
 
 ## Run the app locally
 
