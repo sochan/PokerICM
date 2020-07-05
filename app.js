@@ -285,7 +285,7 @@ function GetHighCard(player)
     if (player.Pair > 0)
         remove(card_values, player.Pair);
 
-    return card_values[card_values.length-1];
+    return card_values;
 }
 
 
@@ -304,7 +304,7 @@ function OneHand(oneLineCards){
         ThreeKind:0,
         TwoPairs:{Pair1:0, Pair2:0}, 
         Pair:0,
-        HighCard:0
+        HighCard:[]
     };
     
     var player2 = {
@@ -319,7 +319,7 @@ function OneHand(oneLineCards){
         ThreeKind:0,
         TwoPairs:{Pair1:0, Pair2:0}, 
         Pair:0,
-        HighCard:0
+        HighCard:[]
     };
 
     var arr = oneLineCards.split(" ");
@@ -375,17 +375,10 @@ function OneHand(oneLineCards){
         player2.Pair = GetOnePair(player2);
 
     // 1 High card
-
     player1.HighCard = GetHighCard(player1);
     player2.HighCard = GetHighCard(player2);
 
-    
-    console.log(player1);
-    console.log(player2);
-    console.log('The winner is player' + WhoWin(player1, player2));
-
-   
-
+    return WhoWin(player1, player2);;
 } 
 /// End Data analysing
 
@@ -393,7 +386,7 @@ function OneHand(oneLineCards){
 //OneHand("QH QD QS 9D 8H 2C 2S 3H 4D 7H");
 //OneHand("QH QD 9S 9D 8H QS QC 9H 9C 8D");
 //OneHand("QH QD 9S 8D 8H QS QC 9H 9C 8D");
-OneHand("QH KD 9S 7D 8H QS AC TH 2C 8D");
+//OneHand("QH KD AS 7D 8H QS AC TH 2C 8D");
 
 // who is the winner;
 // return: 0, 1, 2; 0-tie, 1-Player1 wins, 2-Player2 wins
@@ -467,13 +460,23 @@ function WhoWin(player1, player2){
         return 2;
     
     // 1. High card
-    if (player1.HighCard > player2.HighCard)
-        return 1;
-    if (player2.HighCard > player1.HighCard)
-        return 2;
+    let nb_cards = player1.HighCard.length
+    let who_win_highcard = 0;
+    for (let i=0; i<nb_cards; i++){
+        let high_card_pl1 = player1.HighCard[nb_cards-i];
+        let high_card_pl2 = player2.HighCard[nb_cards-i];
 
-    // by default no one is the winner; tie
-    return 0;
+        if (high_card_pl1 > high_card_pl2){
+            who_win_highcard = 1;
+            break;
+        }
+        if (high_card_pl2 > high_card_pl1){
+            who_win_highcard = 2;
+            break;
+        } 
+    }
+
+    return who_win_highcard;
 }
 
 /// Testing and simulation
@@ -514,7 +517,7 @@ var player2 = {
 
 
 // it will be used to begin the app
-function Start(){
+function StartAllPokerHands(){
     // Check arguments in the console app
     if (process.argv.length < 3) {
         console.log('Please use: node ' + process.argv[1] + ' poker-hands.txt');
@@ -523,18 +526,27 @@ function Start(){
 
     // Read the file and print its contents.
     var fs = require('fs'), filename = process.argv[2];
+    var playing =[0, 0, 0];
     fs.readFile(filename, 'utf8', function(err, data) {
-
         if (err) throw err;
-
-        console.log('OK: ' + filename);
-        console.log(data);
+        let arr_hands = data.split(/\n+/);
+        
+        for (let i=0; i< arr_hands.length; i++){
+            let whowin = OneHand(arr_hands[i]);
+            playing[whowin]++;
+        }
+        
+        console.log("Player 1: " + playing[1]);
+        console.log("Player 2: " + playing[2]);
     });
+    return playing;
 }
 
+var result = StartAllPokerHands();
 
 
 
-app.get('/', (req, res) => res.send('Hello Poker!'))
+
+app.get('/', (req, res) => res.send('Hello Poker! Let\'s see who is the champion! </br> Player 1: '+result[1] + '</br> Player 2: ' + result[2] +'</br> Thanks ICM Consulting!!!'))
 
 app.listen(port, () => console.log(`Poker app listening at http://localhost:${port}`))
