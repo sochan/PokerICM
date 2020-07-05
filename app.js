@@ -4,16 +4,7 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-// Check if Royal Flush
-// return 10 or 0
-function IsRoyalFlush(cards){
 
-}
-
-// it will be used to analyse a player's cards by dividing into the Poker's ten rules.
-function AnalyseCards(cards){
-
-}
 
 //
 
@@ -80,7 +71,6 @@ function IsSuit(arr_cards_oneplayer){
 // Get duplicate card values; the same values
 function SameCardValues(card_values){
     let same_values =[];
-    console.log(card_values);
     for (let i=0; i<card_values.length-1; i++){
         let itm1 = card_values[i];
         let itm2 = card_values[i+1];
@@ -93,6 +83,35 @@ function SameCardValues(card_values){
     }
     return same_values;
 } 
+
+// Get 2 pairs or a Full house
+function Get2SameValues(card_values){
+    let itm1 = card_values[0];
+    let sames =[]; // it might be a three or a pair
+    let all_array_sames = [];
+    for (let i= 1; i< card_values.length; i++){
+        
+        let itm2 = card_values[i];
+
+        if (itm1 === itm2)
+        {
+            if (!sames.includes(itm1))
+                sames.push(itm1);
+            sames.push(itm2);
+        } else {
+            if (sames.length > 0){
+                all_array_sames.push(sames);
+                sames = [];
+            } 
+        }
+
+        if (i === card_values.length -1 && sames.length > 0)
+            all_array_sames.push(sames);
+
+        itm1 = itm2;
+    }
+    return all_array_sames;
+}
 
 //       
 // Get IsRoyalFlush
@@ -157,38 +176,25 @@ function GetFourKind(arr_cards_oneplayer){
 // Return: {Three, Pair}
 function GetFullHouse(arr_cards_oneplayer){
     let full_house = {Three:0, Pair:0};
-    let arr1 =[]; // it might be a three or a pair
-    let arr2=[];
-    let card_values= ArrayCardsValues(arr_cards_oneplayer);
-    for (let i= 0; i< card_values.length -1; i++){
-        let itm1 = card_values[i];
-        let itm2 = card_values[i+1];
-        if (itm1 === itm2)
+    
+    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+    
+    let arr_sames = Get2SameValues(card_values);
+    if (arr_sames.length===2){
+        let arr1 = arr_sames[0]; // it might be a three or a pair
+        let arr2 = arr_sames[1];
+
+        if (arr1.length === 3 && arr2.length === 2)
         {
-            if (arr2.length>0){
-                if (!arr2.includes(itm1))
-                    arr2.push(itm1);
-                arr2.push(itm2);
-            } else{
-                if (!arr1.includes(itm1))
-                    arr1.push(itm1);
-                arr1.push(itm2);
-            }
-        } else if (arr2.length===0){
-            arr2.push(itm2);
+            full_house.Three = arr1[0];
+            full_house.Pair = arr2[0];
         }
-    }
 
-    if (arr1.length === 3 && arr2.length === 2)
-    {
-        full_house.Three = arr1[0];
-        full_house.Pair = arr2[0];
-    }
-
-    if (arr2.length === 3 && arr1.length === 2)
-    {
-        full_house.Three = arr2[0];
-        full_house.Pair = arr1[0];
+        if (arr2.length === 3 && arr1.length === 2)
+        {
+            full_house.Three = arr2[0];
+            full_house.Pair = arr1[0];
+        }
     }
     return full_house;
 }
@@ -228,11 +234,36 @@ function GetStraight(arr_cards_oneplayer){
 function GetThreeKind(arr_cards_oneplayer){
     let card_values = ArrayCardsValues(arr_cards_oneplayer);
     let three = SameCardValues(card_values);
-    console.log(three);
     if (three.length === 3)
         return three[0];
     return 0;
 }
+
+// Two Pairs, Two different pairs;
+function GetTwoPairs(arr_cards_oneplayer){
+    let two_pairs = { Pair1:0, Pair2: 0}
+    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+    let arr_sames = Get2SameValues(card_values);
+
+    if (arr_sames.length === 2){
+        if (arr_sames[0].length === 2 && arr_sames[1].length === 2){
+            two_pairs.Pair1 = arr_sames[1][0]; // it must Pair1 > Pair2
+            two_pairs.Pair2 = arr_sames[0][0];
+        }
+    }   
+    return two_pairs;
+}
+
+// One pair, Two cards of same value
+function GetOnePair(arr_cards_oneplayer){
+    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+    let same_values = SameCardValues(card_values);
+    if (same_values.length === 2)
+        return same_values[0];
+    return 0;
+}
+
+
 
 // One line from poker-hands or one hand; input: 9C 9D 8D 7C 3C 2S KD TH 9H 8H
 function OneHand(oneLineCards){
@@ -309,6 +340,16 @@ function OneHand(oneLineCards){
     if (player2.FullHouse.Three === 0)
         player2.ThreeKind = GetThreeKind(arr2);
     
+    // 3 Two pairs
+    player1.TwoPairs = GetTwoPairs(arr1);
+    player2.TwoPairs = GetTwoPairs(arr2);
+
+    // 2 One Pair
+    if (player1.FullHouse.Three === 0 && player1.TwoPairs.Pair1 === 0)
+        player1.Pair = GetOnePair(arr1);
+    if (player2.FullHouse.Three === 0 && player2.TwoPairs.Pair1 === 0)
+        player2.Pair = GetOnePair(arr2);
+    
     console.log(player1);
     console.log(player2);
     console.log('The winner is player' + WhoWin(player1, player2));
@@ -318,7 +359,7 @@ function OneHand(oneLineCards){
 } 
 /// End Data analysing
 
-OneHand("QH TH KH AH JH 7H 7D 7S 6C 6H");
+OneHand("QH TH KH AH JH 7H 7D 7S 7C 3H");
 
 // who is the winner;
 // return: 0, 1, 2; 0-tie, 1-Player1 wins, 2-Player2 wins
