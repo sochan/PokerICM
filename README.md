@@ -11,12 +11,13 @@ A poker hand consists of a combination of five playing cards, ranked in the foll
 
 [Install Node.js]: https://nodejs.org/en/download/
 
-## Model
+## Model and the Main Concept
 
 ### Player1: 4H 4C 6S 7S KD (Pair of Fours)
 ```
 var player1 = {
     name:'Player1',
+    cards: [ '4H', '4C', '6S', '7S', 'KD' ],
     IsRoyalFlush:false,
     StraightFlush: 0,
     FourKind:0,
@@ -26,13 +27,14 @@ var player1 = {
     ThreeKind:0,
     TwoPairs:{Pair1:0, Pair2:0}, 
     Pair:4,
-    HighCard:13
+    HighCard:[ 6, 7, 13 ]
 };
 ```
 ### Player2: 2C 3S 9S 9D TD (Pair of Nines)
 ```
 var player2 = {
     name:'Player2',
+    cards: [ '2C', '3S', '9S', '9D', 'TD' ],
     IsRoyalFlush:false,
     StraightFlush: 0,
     FourKind:0,
@@ -42,6 +44,43 @@ var player2 = {
     ThreeKind:0,
     TwoPairs:{Pair1:0, Pair2:0}, 
     Pair:9,
-    HighCard:10
+    HighCard:[ 2, 3, 10 ]
 };
 ```
+The winner is Player2
+
+### Player1: 9H 9C 6S 7S KD (Pair of Nines)
+```
+var player1 = {
+    name:'Player1',
+    cards: [ '9H', '9C', '6S', '7S', 'KD' ],
+    IsRoyalFlush:false,
+    StraightFlush: 0,
+    FourKind:0,
+    FullHouse:{Three:0, Pair:0},
+    Flush:0,
+    Straight:0,
+    ThreeKind:0,
+    TwoPairs:{Pair1:0, Pair2:0}, 
+    Pair:4,
+    HighCard:[ 6, 7, 13 ]
+};
+```
+### Player2: 2C 3S 9S 9D KH (Pair of Nines)
+```
+var player2 = {
+    name:'Player2',
+    cards: [ '2C', '3S', '9S', '9D', 'TD' ],
+    IsRoyalFlush:false,
+    StraightFlush: 0,
+    FourKind:0,
+    FullHouse:{Three:0, Pair:0},
+    Flush:0,
+    Straight:0,
+    ThreeKind:0,
+    TwoPairs:{Pair1:0, Pair2:0}, 
+    Pair:9,
+    HighCard:[ 2, 3, 13 ]
+};
+```
+The winner is Player1, both have the same pair of nine, then we compare their high cards as the following 13|13 then 7|3
