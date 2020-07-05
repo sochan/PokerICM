@@ -198,6 +198,24 @@ function GetFlush(arr_cards_oneplayer){
 
 // Straight, All five cards in consecutive value order
 // 
+function GetStraight(arr_cards_oneplayer){
+    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+    let is_straight = false; 
+    for (let i=0; i< card_values.length-1; i++){
+        let itm1 = card_values[i];
+        let itm2 = card_values[i+1];
+        if (itm1+1 === itm2)
+            is_straight = true;
+        else {
+            is_straight = false;
+            break;
+        }
+    }
+    if (is_straight)
+        return card_values[card_values.length-1]; // return the max
+
+    return 0;
+}
 
 // One line from poker-hands or one hand; input: 9C 9D 8D 7C 3C 2S KD TH 9H 8H
 function OneHand(oneLineCards){
@@ -257,11 +275,17 @@ function OneHand(oneLineCards){
     player2.FullHouse = GetFullHouse(arr2);
     
     // 6 Flush
-    if (player1.StraightFlush === 0)
+    if (!player1.IsRoyalFlush && player1.StraightFlush === 0)
         player1.Flush = GetFlush(arr1);
-    if (player2.StraightFlush === 0)
+    if (!player2.IsRoyalFlush && player2.StraightFlush === 0)
         player2.Flush = GetFlush(arr2);
 
+    // 5 Straight
+    if (!player1.IsRoyalFlush && player1.StraightFlush === 0)
+        player1.Straight = GetStraight(arr1);
+    if (!player2.IsRoyalFlush && player2.StraightFlush === 0)
+        player2.Straight = GetStraight(arr2);
+    
     console.log(player1);
     console.log(player2);
     console.log('The winner is player' + WhoWin(player1, player2));
@@ -271,7 +295,7 @@ function OneHand(oneLineCards){
 } 
 /// End Data analysing
 
-OneHand("QC 4C TC 9C JC 3H 5H 2H 6H 9H");
+OneHand("QC TC KC AC JC 3H 5H 2H 6H 9H");
 
 // who is the winner;
 // return: 0, 1, 2; 0-tie, 1-Player1 wins, 2-Player2 wins
