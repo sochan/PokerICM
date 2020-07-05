@@ -77,6 +77,23 @@ function IsSuit(arr_cards_oneplayer){
     return is_suit;
 }
 
+// Get duplicate card values; the same values
+function SameCardValues(card_values){
+    let same_values =[];
+    console.log(card_values);
+    for (let i=0; i<card_values.length-1; i++){
+        let itm1 = card_values[i];
+        let itm2 = card_values[i+1];
+        if(itm1 === itm2)
+        {
+            if (!same_values.includes(itm1))
+            same_values.push(itm1);
+            same_values.push(itm2);
+        } else if (same_values.length > 0) break;
+    }
+    return same_values;
+} 
+
 //       
 // Get IsRoyalFlush
 // Return false if Ten, Jack, Queen, King and Ace in the same suit
@@ -128,18 +145,8 @@ function GetStraightFlush(arr_cards_oneplayer){
 // Four cards of the same value; 4C 4D 4S 4H KH
 // Return: Card value of four of a kind
 function GetFourKind(arr_cards_oneplayer){
-    let arr_four_k =[];
     let card_values= ArrayCardsValues(arr_cards_oneplayer);
-    for(let i=0; i< card_values.length-1; i++){
-        let itm1 = card_values[i];
-        let itm2 = card_values[i+1];
-
-        if (itm1 === itm2){
-            if (!arr_four_k.includes(itm1))
-                arr_four_k.push(itm1);
-            arr_four_k.push(itm2);
-        } else break;
-    }
+    let arr_four_k = SameCardValues(card_values);
     if (arr_four_k.length===4)
         return arr_four_k[0];
     return 0;
@@ -217,6 +224,16 @@ function GetStraight(arr_cards_oneplayer){
     return 0;
 }
 
+// Three kind, Three of a kind
+function GetThreeKind(arr_cards_oneplayer){
+    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+    let three = SameCardValues(card_values);
+    console.log(three);
+    if (three.length === 3)
+        return three[0];
+    return 0;
+}
+
 // One line from poker-hands or one hand; input: 9C 9D 8D 7C 3C 2S KD TH 9H 8H
 function OneHand(oneLineCards){
 
@@ -285,6 +302,12 @@ function OneHand(oneLineCards){
         player1.Straight = GetStraight(arr1);
     if (!player2.IsRoyalFlush && player2.StraightFlush === 0)
         player2.Straight = GetStraight(arr2);
+
+    // 4 Three of a kind
+    if (player1.FullHouse.Three === 0)
+        player1.ThreeKind = GetThreeKind(arr1);
+    if (player2.FullHouse.Three === 0)
+        player2.ThreeKind = GetThreeKind(arr2);
     
     console.log(player1);
     console.log(player2);
@@ -295,7 +318,7 @@ function OneHand(oneLineCards){
 } 
 /// End Data analysing
 
-OneHand("QC TC KC AC JC 3H 5H 2H 6H 9H");
+OneHand("QH TH KH AH JH 7H 7D 7S 6C 6H");
 
 // who is the winner;
 // return: 0, 1, 2; 0-tie, 1-Player1 wins, 2-Player2 wins
