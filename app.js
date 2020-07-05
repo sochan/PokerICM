@@ -113,16 +113,26 @@ function Get2SameValues(card_values){
     return all_array_sames;
 }
 
+// remove item from an array
+// Credit: Ben Lesh
+function remove(arr, item) {
+    for (var i = arr.length; i--;) {
+        if (arr[i] === item) {
+            arr.splice(i, 1);
+        }
+    }
+    return arr;
+}
 //       
 // Get IsRoyalFlush
 // Return false if Ten, Jack, Queen, King and Ace in the same suit
-function GetIsRoyalFlush(arr_cards_oneplayer){
+function GetIsRoyalFlush(player){
     let flage = false;
-    let first_suit = arr_cards_oneplayer[0][1];
+    let first_suit = player.cards[0][1];
 
-    for (let i=0; i < arr_cards_oneplayer.length; i++)
+    for (let i=0; i < player.cards.length; i++)
     {
-        let ele = arr_cards_oneplayer[i];
+        let ele = player.cards[i];
         if (GetCardVal(ele[0]) >= 10 && ele[1]=== first_suit){ 
             flage = true;
         }   
@@ -137,9 +147,9 @@ function GetIsRoyalFlush(arr_cards_oneplayer){
 // GetStraightFlush
 // All five cards in consecutive value order, with the same suit
 // Return the highest card value; i.e 9C TC JC QC KC; it will return 13
-function GetStraightFlush(arr_cards_oneplayer){
-    let card_values = ArrayCardsValues(arr_cards_oneplayer);
-    let is_suit = IsSuit(arr_cards_oneplayer);
+function GetStraightFlush(player){
+    let card_values = ArrayCardsValues(player.cards);
+    let is_suit = IsSuit(player.cards);
     if (!is_suit)
         return 0;
     let is_straight = false;
@@ -163,8 +173,8 @@ function GetStraightFlush(arr_cards_oneplayer){
 // GetFourKind
 // Four cards of the same value; 4C 4D 4S 4H KH
 // Return: Card value of four of a kind
-function GetFourKind(arr_cards_oneplayer){
-    let card_values= ArrayCardsValues(arr_cards_oneplayer);
+function GetFourKind(player){
+    let card_values= ArrayCardsValues(player.cards);
     let arr_four_k = SameCardValues(card_values);
     if (arr_four_k.length===4)
         return arr_four_k[0];
@@ -174,10 +184,10 @@ function GetFourKind(arr_cards_oneplayer){
 // GetFullHouse
 // Full house, Three of a kind and a Pair; 4C 4D 4S 5H 5D
 // Return: {Three, Pair}
-function GetFullHouse(arr_cards_oneplayer){
+function GetFullHouse(player){
     let full_house = {Three:0, Pair:0};
     
-    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+    let card_values = ArrayCardsValues(player.cards);
     
     let arr_sames = Get2SameValues(card_values);
     if (arr_sames.length===2){
@@ -201,9 +211,9 @@ function GetFullHouse(arr_cards_oneplayer){
 
 // GetFlush
 // Flush, All five cards having the same suit;
-function GetFlush(arr_cards_oneplayer){
-    let is_suit = IsSuit(arr_cards_oneplayer);
-    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+function GetFlush(player){
+    let is_suit = IsSuit(player.cards);
+    let card_values = ArrayCardsValues(player.cards);
     if (is_suit)
         return card_values[card_values.length-1];
     return 0;
@@ -211,8 +221,8 @@ function GetFlush(arr_cards_oneplayer){
 
 // Straight, All five cards in consecutive value order
 // 
-function GetStraight(arr_cards_oneplayer){
-    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+function GetStraight(player){
+    let card_values = ArrayCardsValues(player.cards);
     let is_straight = false; 
     for (let i=0; i< card_values.length-1; i++){
         let itm1 = card_values[i];
@@ -231,8 +241,8 @@ function GetStraight(arr_cards_oneplayer){
 }
 
 // Three kind, Three of a kind
-function GetThreeKind(arr_cards_oneplayer){
-    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+function GetThreeKind(player){
+    let card_values = ArrayCardsValues(player.cards);
     let three = SameCardValues(card_values);
     if (three.length === 3)
         return three[0];
@@ -240,9 +250,9 @@ function GetThreeKind(arr_cards_oneplayer){
 }
 
 // Two Pairs, Two different pairs;
-function GetTwoPairs(arr_cards_oneplayer){
+function GetTwoPairs(player){
     let two_pairs = { Pair1:0, Pair2: 0}
-    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+    let card_values = ArrayCardsValues(player.cards);
     let arr_sames = Get2SameValues(card_values);
 
     if (arr_sames.length === 2){
@@ -255,14 +265,28 @@ function GetTwoPairs(arr_cards_oneplayer){
 }
 
 // One pair, Two cards of same value
-function GetOnePair(arr_cards_oneplayer){
-    let card_values = ArrayCardsValues(arr_cards_oneplayer);
+function GetOnePair(player){
+    let card_values = ArrayCardsValues(player.cards);
     let same_values = SameCardValues(card_values);
     if (same_values.length === 2)
         return same_values[0];
     return 0;
 }
 
+// High Card; It will be used to compare while TwoPairs, Pair and only HighCard
+// While tie then compare high card;
+function GetHighCard(player)
+{
+    let card_values = ArrayCardsValues(player.cards);
+    if (player.TwoPairs.Pair1 > 0){
+        remove(card_values, player.TwoPairs.Pair1);
+        remove(card_values, player.TwoPairs.Pair2);
+    }
+    if (player.Pair > 0)
+        remove(card_values, player.Pair);
+
+    return card_values[card_values.length-1];
+}
 
 
 // One line from poker-hands or one hand; input: 9C 9D 8D 7C 3C 2S KD TH 9H 8H
@@ -305,50 +329,56 @@ function OneHand(oneLineCards){
     player1.cards = arr1;
     player2.cards = arr2;
     // 10 Royal Flush
-    player1.IsRoyalFlush = GetIsRoyalFlush(arr1);
-    player2.IsRoyalFlush = GetIsRoyalFlush(arr2);
+    player1.IsRoyalFlush = GetIsRoyalFlush(player1);
+    player2.IsRoyalFlush = GetIsRoyalFlush(player2);
 
     // 9 Straight flush
     if (!player1.IsRoyalFlush)
-        player1.StraightFlush = GetStraightFlush(arr1);
+        player1.StraightFlush = GetStraightFlush(player1);
     if (!player2.IsRoyalFlush)
-        player2.StraightFlush = GetStraightFlush(arr2);
+        player2.StraightFlush = GetStraightFlush(player2);
 
     // 8 Four of a kind
-    player1.FourKind = GetFourKind(arr1);
-    player2.FourKind = GetFourKind(arr2);
+    player1.FourKind = GetFourKind(player1);
+    player2.FourKind = GetFourKind(player2);
 
     // 7 Full house
-    player1.FullHouse = GetFullHouse(arr1);
-    player2.FullHouse = GetFullHouse(arr2);
+    player1.FullHouse = GetFullHouse(player1);
+    player2.FullHouse = GetFullHouse(player2);
     
     // 6 Flush
     if (!player1.IsRoyalFlush && player1.StraightFlush === 0)
-        player1.Flush = GetFlush(arr1);
+        player1.Flush = GetFlush(player1);
     if (!player2.IsRoyalFlush && player2.StraightFlush === 0)
-        player2.Flush = GetFlush(arr2);
+        player2.Flush = GetFlush(player2);
 
     // 5 Straight
     if (!player1.IsRoyalFlush && player1.StraightFlush === 0)
-        player1.Straight = GetStraight(arr1);
+        player1.Straight = GetStraight(player1);
     if (!player2.IsRoyalFlush && player2.StraightFlush === 0)
-        player2.Straight = GetStraight(arr2);
+        player2.Straight = GetStraight(player2);
 
     // 4 Three of a kind
     if (player1.FullHouse.Three === 0)
-        player1.ThreeKind = GetThreeKind(arr1);
+        player1.ThreeKind = GetThreeKind(player1);
     if (player2.FullHouse.Three === 0)
-        player2.ThreeKind = GetThreeKind(arr2);
+        player2.ThreeKind = GetThreeKind(player2);
     
     // 3 Two pairs
-    player1.TwoPairs = GetTwoPairs(arr1);
-    player2.TwoPairs = GetTwoPairs(arr2);
+    player1.TwoPairs = GetTwoPairs(player1);
+    player2.TwoPairs = GetTwoPairs(player2);
 
     // 2 One Pair
     if (player1.FullHouse.Three === 0 && player1.TwoPairs.Pair1 === 0)
-        player1.Pair = GetOnePair(arr1);
+        player1.Pair = GetOnePair(player1);
     if (player2.FullHouse.Three === 0 && player2.TwoPairs.Pair1 === 0)
-        player2.Pair = GetOnePair(arr2);
+        player2.Pair = GetOnePair(player2);
+
+    // 1 High card
+
+    player1.HighCard = GetHighCard(player1);
+    player2.HighCard = GetHighCard(player2);
+
     
     console.log(player1);
     console.log(player2);
@@ -359,7 +389,7 @@ function OneHand(oneLineCards){
 } 
 /// End Data analysing
 
-OneHand("QH TH KH AH JH 7H 7D 7S 7C 3H");
+OneHand("QH QD QS QC JH 2C 2S 3H 4D 7H");
 
 // who is the winner;
 // return: 0, 1, 2; 0-tie, 1-Player1 wins, 2-Player2 wins
