@@ -85,4 +85,4 @@ var player2 = {
     HighCard:[ 2, 3, 13 ]
 };
 ```
-The winner is Player1, both have the same pair of nine, then we compare their high cards as the following 13|13 then 7|3
+The winner is Player1, both players have the same pair of nine, then we compare their high cards as the following 13|13 then 7|3
