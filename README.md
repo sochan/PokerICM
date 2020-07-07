@@ -64,7 +64,7 @@ var player1 = {
     Straight:0,
     ThreeKind:0,
     TwoPairs:{Pair1:0, Pair2:0}, 
-    Pair:4,
+    Pair:9,
     HighCard:[ 6, 7, 13 ]
 };
 ```
